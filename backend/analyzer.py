@@ -1,8 +1,8 @@
 import feedparser
 from textblob import TextBlob
-from typing import List
 import urllib.parse
-from .models import Whisper, Stock
+from typing import List, Dict, Optional
+from .models import Stock, Whisper
 
 class NewsFetcher:
     def __init__(self):
@@ -38,6 +38,8 @@ import google.generativeai as genai
 import os
 import json
 
+from .market_data import MarketDataProvider
+
 class LLMAnalyzer:
     def __init__(self):
         # Configure Gemini
@@ -50,32 +52,49 @@ class LLMAnalyzer:
             # Updated to a model name explicitly found in the list
             self.model = genai.GenerativeModel('gemini-flash-latest')
 
-    def analyze(self, symbol: str, title: str, source: str) -> dict:
+    def analyze(self, symbol: str, articles: List[dict], context: str) -> dict:
         if not self.model:
-            # Fallback if no API key
             return {
                 "action": "HOLD",
                 "severity": "LOW",
-                "reasoning": "LLM not configured. Please set GEMINI_API_KEY."
+                "reasoning": "LLM not configured."
             }
 
-        prompt = f"""
-        Analyze this news headline for stock '{symbol}':
-        Headline: "{title}"
-        Source: "{source}"
+        if not articles:
+            return {
+                "action": "HOLD",
+                "severity": "LOW",
+                "reasoning": "No news found."
+            }
 
-        Determine the trading action (BUY, SELL, HOLD), severity (HIGH, MEDIUM, LOW), and provide a short reasoning (max 1 sentence).
+        # Prepare headlines for batch processing
+        headlines_text = "\n".join([f"- [{a['source']}] {a['title']}" for a in articles[:5]])
+
+        prompt = f"""
+        Analyze these news headlines for stock '{symbol}' given the market context:
+        
+        Market Context: "{context}"
+        
+        Headlines:
+        {headlines_text}
+
+        Task:
+        1. Identify the single most important news item from the list.
+        2. Determine the trading action (BUY, SELL, HOLD) based on that item and the context.
+        3. Assess severity (HIGH, MEDIUM, LOW).
+        
         Return ONLY a JSON object in this format:
         {{
             "action": "BUY/SELL/HOLD",
             "severity": "HIGH/MEDIUM/LOW",
-            "reasoning": "Your reasoning here."
+            "reasoning": "Reasoning based on [Source]: Headline...",
+            "headline": "The specific headline used for analysis",
+            "source": "The source of that headline"
         }}
         """
         
         try:
             response = self.model.generate_content(prompt)
-            # Clean up response to ensure valid JSON
             text = response.text.strip()
             if text.startswith("```json"):
                 text = text[7:-3]
@@ -88,36 +107,57 @@ class LLMAnalyzer:
                 "reasoning": "Failed to analyze with AI."
             }
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 class MarketAnalyzer:
     def __init__(self):
         self.fetcher = NewsFetcher()
         self.llm = LLMAnalyzer()
+        self.market_data = MarketDataProvider()
+
+    def process_stock(self, stock: Stock) -> Optional[Whisper]:
+        try:
+            print(f"Processing {stock.symbol}...")
+            # Fetch market context
+            context = self.market_data.get_context(stock.symbol)
+            print(f"Context for {stock.symbol}: {context[:50]}...")
+            
+            # Fetch news
+            articles = self.fetcher.fetch_news(stock.symbol)
+            print(f"Found {len(articles)} articles for {stock.symbol}")
+            
+            if not articles:
+                print(f"No articles for {stock.symbol}")
+                return None
+
+            # Batch analysis with LLM
+            print(f"Analyzing {stock.symbol} with LLM...")
+            analysis = self.llm.analyze(stock.symbol, articles, context)
+            print(f"LLM Result for {stock.symbol}: {analysis}")
+            
+            # Create whisper
+            # Relaxed filtering for debugging: Show everything except explicit failures
+            if True: 
+                w = Whisper(
+                    symbol=stock.symbol,
+                    type="NEWS",
+                    severity=analysis.get('severity', 'LOW'),
+                    message=f"[{analysis.get('source', 'Unknown')}] {analysis.get('headline', 'Market Update')}",
+                    reasoning=analysis.get('reasoning', 'AI Analysis'),
+                    action=analysis.get('action', 'HOLD')
+                )
+                print(f"Created whisper for {stock.symbol}: {w}")
+                return w
+        except Exception as e:
+            print(f"Error processing {stock.symbol}: {e}")
+            return None
 
     def analyze_stocks(self, stocks: List[Stock]) -> List[Whisper]:
         whispers = []
-        for stock in stocks:
-            articles = self.fetcher.fetch_news(stock.symbol)
-            
-            for article in articles:
-                title = article['title']
-                source = article['source']
-                
-                # Use LLM for analysis
-                analysis = self.llm.analyze(stock.symbol, title, source)
-                
-                # Create whisper
-                # Relaxed filtering for debugging: Show everything except explicit failures
-                if True: 
-                    whispers.append(Whisper(
-                        symbol=stock.symbol,
-                        type="NEWS", # Simplified type for now
-                        severity=analysis.get('severity', 'LOW'),
-                        message=f"[{source}] {title}",
-                        reasoning=analysis.get('reasoning', 'AI Analysis'),
-                        action=analysis.get('action', 'HOLD')
-                    ))
-                    
-                    # Limit to 1 whisper per stock
-                    break 
-                    
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            future_to_stock = {executor.submit(self.process_stock, stock): stock for stock in stocks}
+            for future in as_completed(future_to_stock):
+                whisper = future.result()
+                if whisper:
+                    whispers.append(whisper)
         return whispers
