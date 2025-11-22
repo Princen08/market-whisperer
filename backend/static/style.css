@@ -1,0 +1,275 @@
+:root {
+    --bg-color: #0f0f13;
+    --card-bg: rgba(255, 255, 255, 0.05);
+    --text-primary: #ffffff;
+    --text-secondary: #a1a1aa;
+    --accent-color: #6366f1;
+    --accent-glow: rgba(99, 102, 241, 0.5);
+    --success-color: #10b981;
+    --danger-color: #ef4444;
+    --warning-color: #f59e0b;
+    --font-main: 'Outfit', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    background: radial-gradient(circle at top right, #1e1b4b, #0f0f13 40%);
+}
+
+.app-container {
+    width: 100%;
+    max-width: 800px;
+    padding: 2rem;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    background: linear-gradient(to right, #fff, #a5b4fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+/* Input Section */
+.input-group {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+input {
+    flex: 1;
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    border-radius: 12px;
+    color: white;
+    font-size: 1rem;
+    font-family: var(--font-main);
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+button {
+    cursor: pointer;
+    font-family: var(--font-main);
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+#addBtn {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    padding: 0 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#addBtn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.stock-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    min-height: 40px;
+}
+
+.tag {
+    background: rgba(99, 102, 241, 0.2);
+    color: #a5b4fc;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    animation: fadeIn 0.3s ease;
+}
+
+.tag .remove {
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.tag .remove:hover {
+    opacity: 1;
+}
+
+/* Action Section */
+.divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+    margin: 2rem 0;
+}
+
+.action-section {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.glow-button {
+    background: var(--accent-color);
+    color: white;
+    padding: 1rem 3rem;
+    font-size: 1.2rem;
+    border-radius: 50px;
+    box-shadow: 0 0 20px var(--accent-glow);
+    letter-spacing: 1px;
+}
+
+.glow-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px var(--accent-glow);
+}
+
+.glow-button:active {
+    transform: translateY(0);
+}
+
+/* Results Grid */
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.whisper-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 1.5rem;
+    animation: slideUp 0.5s ease forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.stock-symbol {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.severity-badge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.severity-HIGH {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+}
+
+.severity-MEDIUM {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fcd34d;
+}
+
+.severity-LOW {
+    background: rgba(16, 185, 129, 0.2);
+    color: #6ee7b7;
+}
+
+.message {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.action-badge {
+    display: block;
+    text-align: center;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.action-BUY {
+    background: var(--success-color);
+    color: #064e3b;
+}
+
+.action-SELL {
+    background: var(--danger-color);
+    color: #450a0a;
+}
+
+.action-HOLD {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slideUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.reasoning {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    color: #d4d4d8;
+    border-left: 3px solid var(--accent-color);
+}
+
+.reasoning strong {
+    color: var(--accent-color);
+    display: block;
+    margin-bottom: 0.5rem;
+}
