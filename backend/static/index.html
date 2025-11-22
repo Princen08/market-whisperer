@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Whisperer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Market Whisperer</h1>
+            <p class="subtitle">Listen to the market's secrets.</p>
+        </header>
+
+        <main>
+            <section class="input-section">
+                <div class="input-group">
+                    <input type="text" id="stockInput" placeholder="Enter stock symbol (e.g., AAPL)" autocomplete="off">
+                    <button id="addBtn">Add Stock</button>
+                </div>
+                <div id="stockList" class="stock-tags">
+                    <!-- Tags will be injected here -->
+                </div>
+            </section>
+
+            <div class="divider"></div>
+
+            <section class="action-section">
+                <button id="listenBtn" class="glow-button">LISTEN TO THE MARKET</button>
+            </section>
+
+            <section id="resultsSection" class="results-grid">
+                <!-- Whisper cards will be injected here -->
+            </section>
+        </main>
+    </div>
+    <script src="/static/app.js"></script>
+</body>
+</html>

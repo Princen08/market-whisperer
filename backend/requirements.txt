@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pydantic
+requests
+faker
+feedparser
+textblob
+celery
+redis
+google-generativeai
