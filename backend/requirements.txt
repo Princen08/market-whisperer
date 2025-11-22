@@ -8,3 +8,4 @@ textblob
 celery
 redis
 google-generativeai
+yfinance
