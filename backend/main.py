@@ -1,8 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
-from .models import Stock, AnalysisResult
-from .analyzer import MarketAnalyzer
+from backend.models import Stock
+from backend.analyzer import MarketAnalyzer
 
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
