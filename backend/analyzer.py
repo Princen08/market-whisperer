@@ -2,7 +2,7 @@ import feedparser
 from textblob import TextBlob
 import urllib.parse
 from typing import List, Dict, Optional
-from .models import Stock, Whisper
+from backend.models import Stock, Whisper
 
 class NewsFetcher:
     def __init__(self):

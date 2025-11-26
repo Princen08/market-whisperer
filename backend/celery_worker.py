@@ -1,6 +1,6 @@
 from celery import Celery
-from .analyzer import MarketAnalyzer
-from .models import Whisper, Stock
+from backend.analyzer import MarketAnalyzer
+from backend.models import Whisper, Stock
 from typing import List
 
 # Initialize Celery

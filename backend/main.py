@@ -21,7 +21,7 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory="backend/static"), name="static")
 
 analyzer = MarketAnalyzer()
-from .celery_worker import analyze_stocks_task, celery_app
+from backend.celery_worker import analyze_stocks_task, celery_app
 from celery.result import AsyncResult
 
 # In-memory storage for demo purposes
