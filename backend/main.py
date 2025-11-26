@@ -1,8 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
-from backend.models import Stock
-from backend.analyzer import MarketAnalyzer
+from .models import Stock
+from .analyzer import MarketAnalyzer
 
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -21,7 +21,7 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory="backend/static"), name="static")
 
 analyzer = MarketAnalyzer()
-from backend.celery_worker import analyze_stocks_task, celery_app
+from .celery_worker import analyze_stocks_task, celery_app
 from celery.result import AsyncResult
 
 # In-memory storage for demo purposes
