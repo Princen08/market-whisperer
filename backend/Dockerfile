@@ -11,6 +11,6 @@ COPY . /app/backend/
 
 # run from the backend folder and ensure Python finds modules there
 WORKDIR /app/backend
-ENV PYTHONPATH=.
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+CMD ["PYTHONPATH=. ", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
